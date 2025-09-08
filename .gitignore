@@ -1,0 +1,29 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Compiled class files
+*.class
+
+# Build output
+bin/
+
+# IDE files
+.vscode/
+*.vscode
+
+# Logs
+*.log
+
+# Database
+# *.sql
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
