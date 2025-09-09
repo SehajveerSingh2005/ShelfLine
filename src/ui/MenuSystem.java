@@ -295,7 +295,7 @@ public class MenuSystem {
         System.out.print("Category: ");
         String category = scanner.nextLine().trim();
         
-        BigDecimal price = getDecimalInput("Price: $");
+        BigDecimal price = getDecimalInput("Price: Rs.");
         int quantity = getIntInput("Quantity: ");
         
         Product product = new Product();
@@ -322,14 +322,14 @@ public class MenuSystem {
         if (products.isEmpty()) {
             System.out.println("No products found.");
         } else {
-            System.out.printf("%-5s %-30s %-15s %-10s %-10s%n", "ID", "Name", "Category", "Price", "Quantity");
+            System.out.printf("%-5s %-30s %-15s %-10s%n", "ID", "Name", "Category", "Price (Rs.)", "Quantity");
             System.out.println("------------------------------------------------------------------------");
             for (Product product : products) {
-                System.out.printf("%-5d %-30s %-15s $%-9.2f %-10d%n", 
-                    product.getProductId(), 
-                    product.getName(), 
-                    product.getCategory(), 
-                    product.getPrice(), 
+                System.out.printf("%-5d %-30s %-15s Rs.%-9.2f %-10d%n",
+                    product.getProductId(),
+                    product.getName(),
+                    product.getCategory(),
+                    product.getPrice(),
                     product.getQuantity());
             }
         }
@@ -348,14 +348,14 @@ public class MenuSystem {
             System.out.println("No products found matching your search.");
         } else {
             System.out.println("Search results:");
-            System.out.printf("%-5s %-30s %-15s %-10s %-10s%n", "ID", "Name", "Category", "Price", "Quantity");
+            System.out.printf("%-5s %-30s %-15s %-10s %-10s%n", "ID", "Name", "Category", "Price (Rs.)", "Quantity");
             System.out.println("------------------------------------------------------------------------");
             for (Product product : products) {
-                System.out.printf("%-5d %-30s %-15s $%-9.2f %-10d%n", 
-                    product.getProductId(), 
-                    product.getName(), 
-                    product.getCategory(), 
-                    product.getPrice(), 
+                System.out.printf("%-5d %-30s %-15s Rs.%-9.2f %-10d%n",
+                    product.getProductId(),
+                    product.getName(),
+                    product.getCategory(),
+                    product.getPrice(),
                     product.getQuantity());
             }
         }
@@ -379,7 +379,7 @@ public class MenuSystem {
         System.out.println("Name: " + product.getName());
         System.out.println("Description: " + product.getDescription());
         System.out.println("Category: " + product.getCategory());
-        System.out.println("Price: $" + product.getPrice());
+        System.out.println("Price: Rs." + product.getPrice());
         System.out.println("Quantity: " + product.getQuantity());
         
         System.out.println("\nEnter new values (press Enter to keep current value):");
@@ -402,7 +402,7 @@ public class MenuSystem {
             product.setCategory(category);
         }
         
-        System.out.print("Price [$" + product.getPrice() + "]: ");
+        System.out.print("Price [Rs." + product.getPrice() + "]: ");
         String priceStr = scanner.nextLine().trim();
         if (!priceStr.isEmpty()) {
             try {
@@ -449,7 +449,7 @@ public class MenuSystem {
         System.out.println("Product details:");
         System.out.println("Name: " + product.getName());
         System.out.println("Category: " + product.getCategory());
-        System.out.println("Price: $" + product.getPrice());
+        System.out.println("Price: Rs." + product.getPrice());
         System.out.println("Quantity: " + product.getQuantity());
         
         System.out.print("Are you sure you want to delete this product? (y/N): ");
@@ -586,14 +586,14 @@ public class MenuSystem {
         if (lowStockItems.isEmpty()) {
             System.out.println("No low stock items found.");
         } else {
-            System.out.printf("%-5s %-30s %-15s %-10s %-10s%n", "ID", "Name", "Category", "Price", "Quantity");
+            System.out.printf("%-5s %-30s %-15s %-10s %-10s%n", "ID", "Name", "Category", "Price (Rs.)", "Quantity");
             System.out.println("------------------------------------------------------------------------");
             for (Product product : lowStockItems) {
-                System.out.printf("%-5d %-30s %-15s $%-9.2f %-10d%n", 
-                    product.getProductId(), 
-                    product.getName(), 
-                    product.getCategory(), 
-                    product.getPrice(), 
+                System.out.printf("%-5d %-30s %-15s Rs.%-9.2f %-10d%n",
+                    product.getProductId(),
+                    product.getName(),
+                    product.getCategory(),
+                    product.getPrice(),
                     product.getQuantity());
             }
         }
@@ -669,7 +669,7 @@ public class MenuSystem {
             
             System.out.println("Total Products: " + totalProducts);
             System.out.println("Total Quantity: " + totalQuantity);
-            System.out.println("Total Inventory Value: $" + totalValue);
+            System.out.println("Total Inventory Value: Rs." + totalValue);
         }
         pressEnterToContinue();
     }
@@ -799,7 +799,7 @@ public class MenuSystem {
             System.out.println("========================");
             System.out.println("Total Products: " + totalProducts);
             System.out.println("Total Quantity: " + totalQuantity);
-            System.out.println("Total Inventory Value: $" + totalValue);
+            System.out.println("Total Inventory Value: Rs." + totalValue);
             System.out.println();
             
             // Category breakdown
@@ -823,14 +823,14 @@ public class MenuSystem {
         } else {
             System.out.println("LOW STOCK REPORT (Threshold: " + threshold + ")");
             System.out.println("=====================================");
-            System.out.printf("%-5s %-30s %-15s %-10s %-10s%n", "ID", "Name", "Category", "Price", "Quantity");
+            System.out.printf("%-5s %-30s %-15s %-10s%n", "ID", "Name", "Category", "Price (Rs.)", "Quantity");
             System.out.println("------------------------------------------------------------------------");
             for (Product product : lowStockItems) {
-                System.out.printf("%-5d %-30s %-15s $%-9.2f %-10d%n", 
-                    product.getProductId(), 
-                    product.getName(), 
-                    product.getCategory(), 
-                    product.getPrice(), 
+                System.out.printf("%-5d %-30s %-15s Rs.%-9.2f %-10d%n",
+                    product.getProductId(),
+                    product.getName(),
+                    product.getCategory(),
+                    product.getPrice(),
                     product.getQuantity());
             }
         }
