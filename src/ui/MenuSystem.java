@@ -648,8 +648,47 @@ public class MenuSystem {
         clearScreen();
         System.out.println("=== View Products by Category ===");
         
-        // In a real implementation, we would have a service method to get all categories
-        System.out.println("Category filtering would be implemented here.");
+        // Get all products
+        List<Product> products = productService.getAllProducts();
+        if (products == null || products.isEmpty()) {
+            System.out.println("No products found.");
+            pressEnterToContinue();
+            return;
+        }
+        
+        // Group products by category
+        java.util.Map<String, java.util.List<Product>> productsByCategory = new java.util.HashMap<>();
+        for (Product product : products) {
+            String category = product.getCategory();
+            productsByCategory.computeIfAbsent(category, k -> new java.util.ArrayList<>()).add(product);
+        }
+        
+        // Display products by category
+        for (java.util.Map.Entry<String, java.util.List<Product>> entry : productsByCategory.entrySet()) {
+            String category = entry.getKey();
+            java.util.List<Product> categoryProducts = entry.getValue();
+            
+            System.out.println("\n--- " + category + " ---");
+            System.out.printf("%-5s %-30s %-10s%n", "ID", "Name", "Price (₹)", "Quantity");
+            System.out.println("------------------------------------------------------------");
+            
+            for (Product product : categoryProducts) {
+                System.out.printf("%-5d %-30s ₹%-9.2f %-10d%n",
+                    product.getProductId(),
+                    product.getName(),
+                    product.getPrice(),
+                    product.getQuantity());
+            }
+            
+            // Calculate category totals
+            int totalQuantity = categoryProducts.stream().mapToInt(Product::getQuantity).sum();
+            BigDecimal totalValue = categoryProducts.stream()
+                .map(p -> p.getPrice().multiply(new BigDecimal(p.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            
+            System.out.println("------------------------------------------------------------");
+            System.out.printf("Category Total: %d items, Value: ₹%.2f%n", totalQuantity, totalValue);
+        }
         pressEnterToContinue();
     }
     
@@ -803,10 +842,30 @@ public class MenuSystem {
             System.out.println();
             
             // Category breakdown
-            System.out.println("CATEGORY BREAKDOWN:");
+            System.out.println("\nCATEGORY BREAKDOWN:");
             System.out.println("------------------");
-            // In a real implementation, we would group by category
-            System.out.println("Category breakdown would be implemented here.");
+            
+            // Group products by category
+            java.util.Map<String, java.util.List<Product>> productsByCategory = new java.util.HashMap<>();
+            for (Product product : products) {
+                String category = product.getCategory();
+                productsByCategory.computeIfAbsent(category, k -> new java.util.ArrayList<>()).add(product);
+            }
+            
+            // Display category summaries
+            for (java.util.Map.Entry<String, java.util.List<Product>> entry : productsByCategory.entrySet()) {
+                String category = entry.getKey();
+                java.util.List<Product> categoryProducts = entry.getValue();
+                
+                int categoryCount = categoryProducts.size();
+                int categoryQuantity = categoryProducts.stream().mapToInt(Product::getQuantity).sum();
+                BigDecimal categoryValue = categoryProducts.stream()
+                    .map(p -> p.getPrice().multiply(new BigDecimal(p.getQuantity())))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+                
+                System.out.printf("%-20s: %3d items, %4d qty, Rs.%10.2f%n",
+                    category, categoryCount, categoryQuantity, categoryValue);
+            }
         }
         pressEnterToContinue();
     }
