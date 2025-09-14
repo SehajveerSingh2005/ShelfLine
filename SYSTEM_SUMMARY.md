@@ -21,6 +21,9 @@ The application follows a traditional layered architecture pattern with clear se
 #### Product
 Represents inventory items with properties for ID, name, quantity, price, and category.
 
+#### User
+Represents system users with properties for ID, username, password, and role.
+
 ### 2. Data Access Objects (DAO Layer)
 
 All DAOs extend a `BaseDAO` class that provides common database connection functionality.
@@ -30,6 +33,13 @@ Handles all database operations related to products:
 - Create, read, update, delete products
 - Search products by name or category
 - Find products with low stock
+- Retrieve all distinct categories
+
+#### UserDAO
+Handles all database operations related to users:
+- User authentication
+- Create, read, update, delete users
+- Find users by username or ID
 
 ### 3. Service Classes (Business Logic Layer)
 
@@ -38,6 +48,13 @@ Implements product management business logic:
 - Product creation with validation
 - Product search and retrieval
 - Product update and deletion
+- Get all distinct categories
+
+#### UserService
+Implements user management business logic:
+- User authentication
+- User creation with validation
+- User update and deletion
 
 ### 4. Command Line Interface
 
@@ -47,14 +64,18 @@ Main application class that:
 - Sets up dependency injection
 - Starts the main menu loop
 - Handles graceful shutdown
+- Includes placeholder for Spring IoC container initialization
 
 #### MenuService
 Provides a comprehensive console-based interface:
-- Displays main menu options
+- Displays categorized main menu options
 - Handles user input and validation
-- Coordinates with ProductService for operations
+- Coordinates with ProductService and UserService for operations
 - Formats and displays results to the user
 - Handles errors and exceptions
+- Implements "Press Enter to Continue" functionality
+- Provides category selection instead of typing for category-related operations
+- Uses Rupee symbol (Rs) for currency display
 
 ### 5. Utilities
 
@@ -99,9 +120,28 @@ The system is designed for easy extension:
 2. **Interface-Based**: New implementations can be plugged in
 3. **Configuration-Based**: Behavior can be modified through configuration
 
+## Recent Enhancements
+
+1. **Improved User Interface**:
+   - Categorized menu system for better organization
+   - "Press Enter to Continue" functionality after showing information
+   - Category selection instead of typing for category-related operations
+
+2. **Enhanced Currency Display**:
+   - Changed currency symbol from dollar ($) to Rupee (₹)
+
+3. **Spring Framework Preparation**:
+   - Added placeholder for Spring IoC container initialization
+   - Maintained manual dependency injection for backward compatibility
+
+4. **User Management**:
+   - Implemented user authentication system
+   - Added User entity and UserDAO
+   - Integrated UserService for user management
+
 ## Future Enhancements
 
-1. **User Authentication**: Add user login and role-based access control
+1. **Spring Integration**: Full migration to Spring Framework for IoC and DI
 2. **Web Interface**: Migration to web-based UI using Spring Boot
 3. **REST API**: Expose functionality through web services
 4. **Advanced Reporting**: Charts, graphs, and export capabilities
