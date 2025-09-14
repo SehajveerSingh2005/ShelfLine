@@ -75,7 +75,7 @@ Provides a comprehensive console-based interface:
 - Handles errors and exceptions
 - Implements "Press Enter to Continue" functionality
 - Provides category selection instead of typing for category-related operations
-- Uses Rupee symbol (Rs) for currency display
+- Uses Rupee symbol (₹) for currency display
 
 ### 5. Utilities
 
@@ -120,30 +120,115 @@ The system is designed for easy extension:
 2. **Interface-Based**: New implementations can be plugged in
 3. **Configuration-Based**: Behavior can be modified through configuration
 
+## Spring Framework Integration
+
+The application has been successfully integrated with Spring Core for dependency injection and Inversion of Control (IoC). All dependencies are now managed by the Spring container rather than manual instantiation.
+
+### Spring Core Concepts Implemented:
+
+1. **Inversion of Control (IoC)**:
+   - Replaced manual object creation with Spring container management
+   - Used component annotations (`@Component`, `@Service`, `@Repository`) on classes
+   - Configured component scanning in the AppConfig class
+
+2. **Dependency Injection (DI)**:
+   - Replaced manual constructor/setter injection with `@Autowired`
+   - Used Spring stereotypes (`@Service`, `@Repository`) for semantic clarity
+   - All dependencies are now automatically wired by Spring
+
+3. **Spring Configuration**:
+   - Created `@Configuration` class (AppConfig)
+   - Used `@Bean` annotations for special bean definitions (DatabaseConnection)
+   - Implemented `@ComponentScan` for automatic bean detection
+
+### Implementation Details:
+
+1. **Component Annotations**:
+   ```java
+   @Service
+   public class ProductService { ... }
+   
+   @Repository
+   public class ProductDAO extends BaseDAO { ... }
+   
+   @Component
+   public class MenuService { ... }
+   ```
+
+2. **Dependency Injection Annotations**:
+   ```java
+   // Constructor injection in MenuService
+   @Autowired
+   public MenuService(ProductService productService, UserService userService) { ... }
+   
+   // Setter injection in service classes
+   @Autowired
+   public void setProductDAO(ProductDAO productDAO) { ... }
+   
+   @Autowired
+   public void setUserDAO(UserDAO userDAO) { ... }
+   ```
+
+3. **Configuration Class**:
+   ```java
+   @Configuration
+   @ComponentScan(basePackages = "com.example.shelfline")
+   public class AppConfig {
+       @Bean
+       public DatabaseConnection databaseConnection() {
+           return DatabaseConnection.getInstance();
+       }
+       
+       @Bean
+       public ProductDAO productDAO(DatabaseConnection databaseConnection) {
+           return new ProductDAO(databaseConnection);
+       }
+       
+       @Bean
+       public UserDAO userDAO(DatabaseConnection databaseConnection) {
+           return new UserDAO(databaseConnection);
+       }
+   }
+   ```
+
+4. **Application Initialization**:
+   ```java
+   ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+   MenuService menuService = context.getBean(MenuService.class);
+   ```
+
+### Benefits of Spring Integration:
+
+1. **Loose Coupling**: Classes are no longer tightly coupled to their dependencies
+2. **Easier Testing**: Can easily inject mock dependencies for unit testing
+3. **Maintainability**: Adding new features is simpler as Spring handles the wiring
+4. **Scalability**: The architecture can easily accommodate new components
+
 ## Recent Enhancements
 
 1. **Improved User Interface**:
    - Categorized menu system for better organization
    - "Press Enter to Continue" functionality after showing information
    - Category selection instead of typing for category-related operations
-
-2. **Enhanced Currency Display**:
    - Changed currency symbol from dollar ($) to Rupee (₹)
 
-3. **Spring Framework Preparation**:
-   - Added placeholder for Spring IoC container initialization
-   - Maintained manual dependency injection for backward compatibility
+2. **Spring Framework Integration**:
+   - Full migration to Spring Core for IoC and DI
+   - Replaced manual dependency injection with Spring-managed beans
+   - Added component annotations (`@Component`, `@Service`, `@Repository`) to classes
+   - Configured automatic dependency wiring through `@Autowired`
+   - Simplified application initialization through Spring context
 
-4. **User Management**:
+3. **User Management**:
    - Implemented user authentication system
    - Added User entity and UserDAO
    - Integrated UserService for user management
 
 ## Future Enhancements
 
-1. **Spring Integration**: Full migration to Spring Framework for IoC and DI
-2. **Web Interface**: Migration to web-based UI using Spring Boot
-3. **REST API**: Expose functionality through web services
-4. **Advanced Reporting**: Charts, graphs, and export capabilities
-5. **Notification System**: Email/SMS alerts for low stock
-6. **Barcode Integration**: Scanner support for product management
+1. **Web Interface**: Migration to web-based UI using Spring Boot
+2. **REST API**: Expose functionality through web services
+3. **Advanced Reporting**: Charts, graphs, and export capabilities
+4. **Notification System**: Email/SMS alerts for low stock
+5. **Barcode Integration**: Scanner support for product management
+6. **Security Enhancements**: Spring Security for authentication and authorization

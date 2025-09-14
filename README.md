@@ -10,6 +10,7 @@ A console-based inventory management application built with Java and MySQL. This
 - **User-Friendly CLI**: Intuitive menu-driven interface
 - **Data Validation**: Input validation and error handling
 - **Database Integration**: MySQL database with proper connection management
+- **Spring Core Integration**: Dependency injection and Inversion of Control for better maintainability
 
 ## System Architecture
 
@@ -20,6 +21,21 @@ The application follows a traditional layered architecture pattern with clear se
 3. **Data Access Layer** (`dao` package): Provides database access through Data Access Objects
 4. **Model Layer** (`model` package): Represents domain entities
 5. **Utility Layer** (`util` package): Provides common utilities
+6. **Configuration Layer** (`config` package): Spring configuration classes
+
+## Spring Core Integration
+
+This application has been enhanced with Spring Core to provide dependency injection and inversion of control. The key components are:
+
+- **@Component**: Applied to `MenuService` to make it a Spring-managed bean
+- **@Service**: Applied to service classes (`ProductService`, `UserService`)
+- **@Repository**: Applied to DAO classes (`ProductDAO`, `UserDAO`)
+- **@Configuration**: Used in `AppConfig` to define configuration
+- **@ComponentScan**: Enables automatic detection of Spring components
+- **@Bean**: Used for defining beans that require special instantiation logic
+- **@Autowired**: Used for automatic dependency injection in constructors and setters
+
+Spring automatically wires the dependencies between layers, making the code more modular and testable.
 
 ## Prerequisites
 

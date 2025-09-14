@@ -5,6 +5,9 @@ import com.example.shelfline.service.UserService;
 import com.example.shelfline.model.Product;
 import com.example.shelfline.model.User;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,6 +19,7 @@ import java.util.Scanner;
  * @author ShelfLine Team
  * @version 1.0
  */
+@Component
 public class MenuService {
     
     private ProductService productService;
@@ -28,6 +32,7 @@ public class MenuService {
      * @param productService the ProductService to use for inventory operations
      * @param userService the UserService to use for user operations
      */
+    @Autowired
     public MenuService(ProductService productService, UserService userService) {
         this.productService = productService;
         this.userService = userService;

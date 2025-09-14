@@ -2,6 +2,8 @@ package com.example.shelfline.service;
 
 import com.example.shelfline.dao.UserDAO;
 import com.example.shelfline.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
@@ -15,6 +17,7 @@ import java.util.List;
  * @author ShelfLine Team
  * @version 1.0
  */
+@Service
 public class UserService {
     
     private UserDAO userDAO;
@@ -42,6 +45,7 @@ public class UserService {
      * 
      * @param userDAO the UserDAO to use for database operations
      */
+    @Autowired
     public void setUserDAO(UserDAO userDAO) {
         this.userDAO = userDAO;
     }

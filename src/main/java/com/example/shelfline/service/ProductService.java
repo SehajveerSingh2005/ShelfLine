@@ -2,6 +2,8 @@ package com.example.shelfline.service;
 
 import com.example.shelfline.dao.ProductDAO;
 import com.example.shelfline.model.Product;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
@@ -15,10 +17,11 @@ import java.util.List;
  * @author ShelfLine Team
  * @version 1.0
  */
+@Service
 public class ProductService {
-    
+	
     private ProductDAO productDAO;
-    
+	
     /**
      * Default constructor for ProductService.
      * Note: This constructor does not initialize the ProductDAO.
@@ -42,6 +45,7 @@ public class ProductService {
      * 
      * @param productDAO the ProductDAO to use for database operations
      */
+    @Autowired
     public void setProductDAO(ProductDAO productDAO) {
         this.productDAO = productDAO;
     }

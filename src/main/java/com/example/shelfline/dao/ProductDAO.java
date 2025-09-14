@@ -2,6 +2,9 @@ package com.example.shelfline.dao;
 
 import com.example.shelfline.model.Product;
 import com.example.shelfline.util.DatabaseConnection;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +14,7 @@ import java.util.List;
  * Provides methods to interact with the products table in the database.
  * Implements CRUD operations and additional search functionality.
  */
+@Repository
 public class ProductDAO extends BaseDAO {
     
     /**
