@@ -135,17 +135,24 @@ public class MenuService {
             System.out.print("Enter product price: ");
             double price = getDoubleInput();
             
-            System.out.print("Enter product category: ");
-            String category = scanner.nextLine().trim();
+            System.out.println("Select product category:");
+            String category = selectCategory();
+            if (category == null) {
+                System.out.print("Enter new product category: ");
+                category = scanner.nextLine().trim();
+            }
             
             Product product = new Product(name, quantity, price, category);
             long productId = productService.addProduct(product);
             
             System.out.println("Product added successfully with ID: " + productId);
+            pressEnterToContinue();
         } catch (IllegalArgumentException e) {
             System.err.println("Invalid input: " + e.getMessage());
+            pressEnterToContinue();
         } catch (Exception e) {
             System.err.println("Error adding product: " + e.getMessage());
+            pressEnterToContinue();
         }
     }
     
@@ -170,8 +177,10 @@ public class MenuService {
             } else {
                 System.out.println("Product with ID " + id + " not found.");
             }
+            pressEnterToContinue();
         } catch (Exception e) {
             System.err.println("Error retrieving product: " + e.getMessage());
+            pressEnterToContinue();
         }
     }
     
@@ -198,8 +207,10 @@ public class MenuService {
                             product.getCategory());
                 }
             }
+            pressEnterToContinue();
         } catch (Exception e) {
             System.err.println("Error retrieving products: " + e.getMessage());
+            pressEnterToContinue();
         }
     }
     
@@ -216,6 +227,7 @@ public class MenuService {
             
             if (product == null) {
                 System.out.println("Product with ID " + id + " not found.");
+                pressEnterToContinue();
                 return;
             }
             
@@ -245,10 +257,19 @@ public class MenuService {
                 product.setPrice(price);
             }
             
-            System.out.print("Enter new category (or press Enter to keep current): ");
+            System.out.println("Select new category (or press Enter to keep current):");
             String categoryInput = scanner.nextLine().trim();
             if (!categoryInput.isEmpty()) {
-                product.setCategory(categoryInput);
+                String category = selectCategory();
+                if (category != null) {
+                    product.setCategory(category);
+                } else {
+                    System.out.print("Enter new category: ");
+                    category = scanner.nextLine().trim();
+                    if (!category.isEmpty()) {
+                        product.setCategory(category);
+                    }
+                }
             }
             
             boolean updated = productService.updateProduct(product);
@@ -258,12 +279,16 @@ public class MenuService {
             } else {
                 System.out.println("Failed to update product.");
             }
+            pressEnterToContinue();
         } catch (NumberFormatException e) {
             System.err.println("Invalid number format: " + e.getMessage());
+            pressEnterToContinue();
         } catch (IllegalArgumentException e) {
             System.err.println("Invalid input: " + e.getMessage());
+            pressEnterToContinue();
         } catch (Exception e) {
             System.err.println("Error updating product: " + e.getMessage());
+            pressEnterToContinue();
         }
     }
     
@@ -280,6 +305,7 @@ public class MenuService {
             
             if (product == null) {
                 System.out.println("Product with ID " + id + " not found.");
+                pressEnterToContinue();
                 return;
             }
             
@@ -303,8 +329,10 @@ public class MenuService {
             } else {
                 System.out.println("Product deletion cancelled.");
             }
+            pressEnterToContinue();
         } catch (Exception e) {
             System.err.println("Error deleting product: " + e.getMessage());
+            pressEnterToContinue();
         }
     }
     
@@ -314,8 +342,16 @@ public class MenuService {
     private void searchByCategory() {
         try {
             System.out.println("\n===== Search by Category =====");
-            System.out.print("Enter category to search for: ");
-            String category = scanner.nextLine().trim();
+            String category = selectCategory();
+            if (category == null) {
+                System.out.print("Enter category to search for: ");
+                category = scanner.nextLine().trim();
+                if (category.isEmpty()) {
+                    System.out.println("No category entered.");
+                    pressEnterToContinue();
+                    return;
+                }
+            }
             
             List<Product> products = productService.searchByCategory(category);
             
@@ -323,7 +359,7 @@ public class MenuService {
                 System.out.println("No products found in category: " + category);
             } else {
                 System.out.println("\nProducts in category '" + category + "':");
-                System.out.printf("%-5s %-20s %-10s%n", "ID", "Name", "Quantity", "Price");
+                System.out.printf("%-5s %-20s %-10s %-10s%n", "ID", "Name", "Quantity", "Price");
                 System.out.println("------------------------------------------------");
                 
                 for (Product product : products) {
@@ -334,10 +370,13 @@ public class MenuService {
                             product.getPrice());
                 }
             }
+            pressEnterToContinue();
         } catch (IllegalArgumentException e) {
             System.err.println("Invalid input: " + e.getMessage());
+            pressEnterToContinue();
         } catch (Exception e) {
             System.err.println("Error searching by category: " + e.getMessage());
+            pressEnterToContinue();
         }
     }
     
@@ -368,10 +407,13 @@ public class MenuService {
                             product.getCategory());
                 }
             }
+            pressEnterToContinue();
         } catch (IllegalArgumentException e) {
             System.err.println("Invalid input: " + e.getMessage());
+            pressEnterToContinue();
         } catch (Exception e) {
             System.err.println("Error searching by name: " + e.getMessage());
+            pressEnterToContinue();
         }
     }
     
@@ -402,10 +444,13 @@ public class MenuService {
                             product.getCategory());
                 }
             }
+            pressEnterToContinue();
         } catch (IllegalArgumentException e) {
             System.err.println("Invalid input: " + e.getMessage());
+            pressEnterToContinue();
         } catch (Exception e) {
             System.err.println("Error retrieving low stock products: " + e.getMessage());
+            pressEnterToContinue();
         }
     }
     
@@ -454,6 +499,80 @@ public class MenuService {
             } catch (NumberFormatException e) {
                 System.out.print("Invalid input. Please enter a valid decimal number: ");
             }
+        }
+    }
+    
+    /**
+     * Handles user login.
+     * 
+     * @return the authenticated User object if successful, null otherwise
+     */
+    private User login() {
+        try {
+            System.out.println("\n===== ShelfLine Inventory Management System Login =====");
+            System.out.print("Username: ");
+            String username = scanner.nextLine().trim();
+            
+            System.out.print("Password: ");
+            String password = scanner.nextLine().trim();
+            
+            User user = userService.authenticateUser(username, password);
+            
+            if (user != null) {
+                System.out.println("Login successful. Welcome, " + user.getUsername() + "!");
+                return user;
+            } else {
+                System.out.println("Invalid username or password.");
+                return null;
+            }
+        } catch (Exception e) {
+            System.err.println("Error during login: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * Waits for the user to press Enter to continue.
+     */
+    private void pressEnterToContinue() {
+        System.out.println("\nPress Enter to continue...");
+        scanner.nextLine();
+    }
+    
+    /**
+     * Displays a list of categories and lets the user select one.
+     *
+     * @return the selected category, or null if no categories exist or user cancels
+     */
+    private String selectCategory() {
+        try {
+            List<String> categories = productService.getAllCategories();
+            
+            if (categories.isEmpty()) {
+                System.out.println("No categories found in the database.");
+                return null;
+            }
+            
+            System.out.println("\nAvailable Categories:");
+            for (int i = 0; i < categories.size(); i++) {
+                System.out.println((i + 1) + ". " + categories.get(i));
+            }
+            System.out.println((categories.size() + 1) + ". Cancel");
+            System.out.print("Select a category (1-" + (categories.size() + 1) + "): ");
+            
+            int choice = getIntInput();
+            
+            if (choice >= 1 && choice <= categories.size()) {
+                return categories.get(choice - 1);
+            } else if (choice == categories.size() + 1) {
+                return null; // User chose to cancel
+            } else {
+                System.out.println("Invalid selection.");
+                return null;
+            }
+        } catch (Exception e) {
+            System.err.println("Error retrieving categories: " + e.getMessage());
+            return null;
         }
     }
 }

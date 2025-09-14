@@ -236,4 +236,18 @@ public class ProductService {
         product.setQuantity(newQuantity);
         return productDAO.update(product);
     }
+    
+    /**
+     * Retrieves all distinct categories from the products table
+     *
+     * @return a list of all distinct categories
+     * @throws IllegalStateException if the ProductDAO is not initialized
+     */
+    public List<String> getAllCategories() throws IllegalStateException {
+        if (productDAO == null) {
+            throw new IllegalStateException("ProductDAO is not initialized");
+        }
+        
+        return productDAO.findAllCategories();
+    }
 }

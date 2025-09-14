@@ -244,4 +244,26 @@ public class ProductDAO extends BaseDAO {
         
         return products;
     }
+    
+    /**
+     * Retrieves all distinct categories from the products table
+     * @return a list of all distinct categories
+     */
+    public List<String> findAllCategories() {
+        List<String> categories = new ArrayList<>();
+        String sql = "SELECT DISTINCT category FROM products ORDER BY category";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            while (rs.next()) {
+                categories.add(rs.getString("category"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error retrieving all categories: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return categories;
+    }
 }
