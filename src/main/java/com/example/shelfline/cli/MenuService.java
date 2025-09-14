@@ -66,14 +66,18 @@ public class MenuService {
             try {
                 System.out.println("\n===== ShelfLine Inventory Management System =====");
                 System.out.println("Welcome, " + currentUser.getUsername() + " (" + currentUser.getRole() + ")");
+                System.out.println("\n--- Product Management ---");
                 System.out.println("1. Add Product");
-                System.out.println("2. View Product by ID");
-                System.out.println("3. View All Products");
-                System.out.println("4. Update Product");
-                System.out.println("5. Delete Product");
-                System.out.println("6. Search by Category");
-                System.out.println("7. Search by Name");
-                System.out.println("8. View Low Stock Products");
+                System.out.println("2. Update Product");
+                System.out.println("3. Delete Product");
+                System.out.println("\n--- Product Viewing ---");
+                System.out.println("4. View Product by ID");
+                System.out.println("5. View All Products");
+                System.out.println("6. View Low Stock Products");
+                System.out.println("\n--- Product Search ---");
+                System.out.println("7. Search by Category");
+                System.out.println("8. Search by Name");
+                System.out.println("\n--- System ---");
                 System.out.println("9. Exit");
                 System.out.println("================================================");
                 System.out.print("Please select an option (1-9): ");
@@ -85,25 +89,25 @@ public class MenuService {
                         addProduct();
                         break;
                     case 2:
-                        viewProductById();
-                        break;
-                    case 3:
-                        viewAllProducts();
-                        break;
-                    case 4:
                         updateProduct();
                         break;
-                    case 5:
+                    case 3:
                         deleteProduct();
                         break;
+                    case 4:
+                        viewProductById();
+                        break;
+                    case 5:
+                        viewAllProducts();
+                        break;
                     case 6:
-                        searchByCategory();
+                        viewLowStockProducts();
                         break;
                     case 7:
-                        searchByName();
+                        searchByCategory();
                         break;
                     case 8:
-                        viewLowStockProducts();
+                        searchByName();
                         break;
                     case 9:
                         running = false;
