@@ -176,7 +176,7 @@ public class MenuService {
                 System.out.println("ID: " + product.getId());
                 System.out.println("Name: " + product.getName());
                 System.out.println("Quantity: " + product.getQuantity());
-                System.out.println("Price: $" + String.format("%.2f", product.getPrice()));
+                System.out.println("Price: Rs" + String.format("%.2f", product.getPrice()));
                 System.out.println("Category: " + product.getCategory());
             } else {
                 System.out.println("Product with ID " + id + " not found.");
@@ -203,7 +203,7 @@ public class MenuService {
                 System.out.println("----------------------------------------------------------------");
                 
                 for (Product product : products) {
-                    System.out.printf("%-5d %-20s %-10d $%-9.2f %-15s%n",
+                    System.out.printf("%-5d %-20s %-10d Rs%-9.2f %-15s%n",
                             product.getId(),
                             product.getName(),
                             product.getQuantity(),
@@ -238,7 +238,7 @@ public class MenuService {
             System.out.println("Current product details:");
             System.out.println("Name: " + product.getName());
             System.out.println("Quantity: " + product.getQuantity());
-            System.out.println("Price: $" + String.format("%.2f", product.getPrice()));
+            System.out.println("Price: Rs" + String.format("%.2f", product.getPrice()));
             System.out.println("Category: " + product.getCategory());
             
             System.out.print("Enter new name (or press Enter to keep current): ");
@@ -316,7 +316,7 @@ public class MenuService {
             System.out.println("Product to delete:");
             System.out.println("Name: " + product.getName());
             System.out.println("Quantity: " + product.getQuantity());
-            System.out.println("Price: $" + String.format("%.2f", product.getPrice()));
+            System.out.println("Price: Rs" + String.format("%.2f", product.getPrice()));
             System.out.println("Category: " + product.getCategory());
             
             System.out.print("Are you sure you want to delete this product? (y/N): ");
@@ -367,7 +367,7 @@ public class MenuService {
                 System.out.println("------------------------------------------------");
                 
                 for (Product product : products) {
-                    System.out.printf("%-5d %-20s %-10d $%-9.2f%n",
+                    System.out.printf("%-5d %-20s %-10d Rs%-9.2f%n",
                             product.getId(),
                             product.getName(),
                             product.getQuantity(),
@@ -403,7 +403,7 @@ public class MenuService {
                 System.out.println("----------------------------------------------------------------");
                 
                 for (Product product : products) {
-                    System.out.printf("%-5d %-20s %-10d $%-9.2f %-15s%n",
+                    System.out.printf("%-5d %-20s %-10d Rs%-9.2f %-15s%n",
                             product.getId(),
                             product.getName(),
                             product.getQuantity(),
@@ -440,7 +440,7 @@ public class MenuService {
                 System.out.println("----------------------------------------------------------------");
                 
                 for (Product product : products) {
-                    System.out.printf("%-5d %-20s %-10d $%-9.2f %-15s%n",
+                    System.out.printf("%-5d %-20s %-10d Rs%-9.2f %-15s%n",
                             product.getId(),
                             product.getName(),
                             product.getQuantity(),
