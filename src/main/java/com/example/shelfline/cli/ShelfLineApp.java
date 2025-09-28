@@ -1,34 +1,41 @@
 package com.example.shelfline.cli;
 
-import com.example.shelfline.config.AppConfig;
+import com.example.shelfline.service.ProductService;
+import com.example.shelfline.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Component;
 
 /**
  * Main application class for the ShelfLine Inventory Management System CLI.
- * This class initializes the application components and starts the main menu loop.
+ * This class implements CommandLineRunner to work with Spring Boot.
  * 
  * @author ShelfLine Team
  * @version 1.0
  */
-public class ShelfLineApp {
+@Component
+public class ShelfLineApp implements CommandLineRunner {
+    
+    private final MenuService menuService;
+    private final ApplicationContext applicationContext;
+
+    @Autowired
+    public ShelfLineApp(MenuService menuService, ApplicationContext applicationContext) {
+        this.menuService = menuService;
+        this.applicationContext = applicationContext;
+    }
     
     /**
-     * Main method to start the ShelfLine Inventory Management System.
-     * Initializes the application components and starts the main menu loop.
+     * Method to run the ShelfLine Inventory Management System.
+     * This method is called by Spring Boot application.
      * 
      * @param args command line arguments (not used)
      */
-    public static void main(String[] args) {
+    public void run(String... args) throws Exception {
         System.out.println("Starting ShelfLine Inventory Management System...");
         
         try {
-            // Initialize Spring IoC container
-            ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-            
-            // Get the MenuService bean from Spring context
-            MenuService menuService = context.getBean(MenuService.class);
-            
             System.out.println("Services initialized successfully.");
             
             // Check if we should exit immediately (for testing)
@@ -45,16 +52,18 @@ public class ShelfLineApp {
             shutdownApplication();
         }
     }
-    
+
     /**
      * Gracefully shuts down the application.
      * Closes database connections and performs cleanup operations.
      */
-    private static void shutdownApplication() {
+    private void shutdownApplication() {
         System.out.println("\nShutting down ShelfLine Inventory Management System...");
         
         try {
             System.out.println("Application shutdown complete.");
+            // Exit the JVM to properly terminate the application
+            System.exit(0);
         } catch (Exception e) {
             System.err.println("Error during application shutdown: " + e.getMessage());
         }

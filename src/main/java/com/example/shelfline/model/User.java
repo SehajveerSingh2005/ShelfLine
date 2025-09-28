@@ -1,5 +1,7 @@
 package com.example.shelfline.model;
 
+import javax.persistence.*;
+
 /**
  * User entity representing a system user.
  * Contains information about users including identification, username, password, and role.
@@ -7,10 +9,21 @@ package com.example.shelfline.model;
  * @author ShelfLine Team
  * @version 1.0
  */
+@Entity
+@Table(name = "users")
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private long id;
+    
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
+    
+    @Column(name = "password", nullable = false)
     private String password;
+    
+    @Column(name = "role", nullable = false)
     private String role;
 
     /**

@@ -1,5 +1,7 @@
 package com.example.shelfline.model;
 
+import javax.persistence.*;
+
 /**
  * Product entity representing an item in the inventory system.
  * Contains information about products including identification, name, quantity, price, and category.
@@ -7,11 +9,24 @@ package com.example.shelfline.model;
  * @author ShelfLine Team
  * @version 1.0
  */
+@Entity
+@Table(name = "products")
 public class Product {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "product_id")
     private long id;
+    
+    @Column(name = "name", nullable = false)
     private String name;
+    
+    @Column(name = "quantity", nullable = false)
     private int quantity;
+    
+    @Column(name = "price", nullable = false)
     private double price;
+    
+    @Column(name = "category", nullable = false)
     private String category;
 
     /**

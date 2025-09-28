@@ -1,7 +1,7 @@
 package com.example.shelfline.service;
 
-import com.example.shelfline.dao.ProductDAO;
 import com.example.shelfline.model.Product;
+import com.example.shelfline.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
  * Provides business logic for inventory operations including CRUD operations,
  * search functionality, and stock management.
  * 
- * This class uses dependency injection for the ProductDAO to interact with the database.
+ * This class uses dependency injection for the ProductRepository to interact with the database.
  * All operations include appropriate validation to ensure data integrity.
  * 
  * @author ShelfLine Team
@@ -19,35 +19,17 @@ import java.util.List;
  */
 @Service
 public class ProductService {
-	
-    private ProductDAO productDAO;
-	
-    /**
-     * Default constructor for ProductService.
-     * Note: This constructor does not initialize the ProductDAO.
-     * Use the parameterized constructor for proper dependency injection.
-     */
-    public ProductService() {
-    }
+    
+    private ProductRepository productRepository;
     
     /**
      * Constructor for ProductService with dependency injection.
      * 
-     * @param productDAO the ProductDAO to use for database operations
-     */
-    public ProductService(ProductDAO productDAO) {
-        this.productDAO = productDAO;
-    }
-    
-    /**
-     * Sets the ProductDAO for this service.
-     * This method supports dependency injection.
-     * 
-     * @param productDAO the ProductDAO to use for database operations
+     * @param productRepository the ProductRepository to use for database operations
      */
     @Autowired
-    public void setProductDAO(ProductDAO productDAO) {
-        this.productDAO = productDAO;
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
     
     /**
@@ -80,17 +62,16 @@ public class ProductService {
      * @param product the product to add
      * @return the ID of the newly created product
      * @throws IllegalArgumentException if the product fails validation
-     * @throws IllegalStateException if the ProductDAO is not initialized
+     * @throws IllegalStateException if the ProductRepository is not initialized
      */
     public long addProduct(Product product) throws IllegalArgumentException, IllegalStateException {
-        if (productDAO == null) {
-            throw new IllegalStateException("ProductDAO is not initialized");
+        if (productRepository == null) {
+            throw new IllegalStateException("ProductRepository is not initialized");
         }
         
         validateProduct(product);
-        long id = productDAO.create(product);
-        product.setId(id);
-        return id;
+        Product savedProduct = productRepository.save(product);
+        return savedProduct.getId();
     }
     
     /**
@@ -99,15 +80,19 @@ public class ProductService {
      * @param product the product to update
      * @return true if the product was updated successfully, false otherwise
      * @throws IllegalArgumentException if the product fails validation
-     * @throws IllegalStateException if the ProductDAO is not initialized
+     * @throws IllegalStateException if the ProductRepository is not initialized
      */
     public boolean updateProduct(Product product) throws IllegalArgumentException, IllegalStateException {
-        if (productDAO == null) {
-            throw new IllegalStateException("ProductDAO is not initialized");
+        if (productRepository == null) {
+            throw new IllegalStateException("ProductRepository is not initialized");
         }
         
         validateProduct(product);
-        return productDAO.update(product);
+        if (productRepository.existsById(product.getId())) {
+            productRepository.save(product);
+            return true;
+        }
+        return false;
     }
     
     /**
@@ -115,14 +100,18 @@ public class ProductService {
      * 
      * @param id the ID of the product to delete
      * @return true if the product was deleted successfully, false otherwise
-     * @throws IllegalStateException if the ProductDAO is not initialized
+     * @throws IllegalStateException if the ProductRepository is not initialized
      */
     public boolean deleteProduct(long id) throws IllegalStateException {
-        if (productDAO == null) {
-            throw new IllegalStateException("ProductDAO is not initialized");
+        if (productRepository == null) {
+            throw new IllegalStateException("ProductRepository is not initialized");
         }
         
-        return productDAO.delete(id);
+        if (productRepository.existsById(id)) {
+            productRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
     
     /**
@@ -130,28 +119,28 @@ public class ProductService {
      * 
      * @param id the ID of the product to retrieve
      * @return the Product object if found, null otherwise
-     * @throws IllegalStateException if the ProductDAO is not initialized
+     * @throws IllegalStateException if the ProductRepository is not initialized
      */
     public Product getProductById(long id) throws IllegalStateException {
-        if (productDAO == null) {
-            throw new IllegalStateException("ProductDAO is not initialized");
+        if (productRepository == null) {
+            throw new IllegalStateException("ProductRepository is not initialized");
         }
         
-        return productDAO.findById(id);
+        return productRepository.findById(id).orElse(null);
     }
     
     /**
      * Retrieves all products in the inventory.
      * 
      * @return a list of all products
-     * @throws IllegalStateException if the ProductDAO is not initialized
+     * @throws IllegalStateException if the ProductRepository is not initialized
      */
     public List<Product> getAllProducts() throws IllegalStateException {
-        if (productDAO == null) {
-            throw new IllegalStateException("ProductDAO is not initialized");
+        if (productRepository == null) {
+            throw new IllegalStateException("ProductRepository is not initialized");
         }
         
-        return productDAO.findAll();
+        return productRepository.findAll();
     }
     
     /**
@@ -160,18 +149,18 @@ public class ProductService {
      * @param category the category to search for
      * @return a list of products in the specified category
      * @throws IllegalArgumentException if the category is null or empty
-     * @throws IllegalStateException if the ProductDAO is not initialized
+     * @throws IllegalStateException if the ProductRepository is not initialized
      */
     public List<Product> searchByCategory(String category) throws IllegalArgumentException, IllegalStateException {
-        if (productDAO == null) {
-            throw new IllegalStateException("ProductDAO is not initialized");
+        if (productRepository == null) {
+            throw new IllegalStateException("ProductRepository is not initialized");
         }
         
         if (category == null || category.trim().isEmpty()) {
             throw new IllegalArgumentException("Category cannot be null or empty");
         }
         
-        return productDAO.findByCategory(category);
+        return productRepository.findByCategory(category);
     }
     
     /**
@@ -180,18 +169,18 @@ public class ProductService {
      * @param name the name pattern to search for
      * @return a list of products matching the name pattern
      * @throws IllegalArgumentException if the name is null or empty
-     * @throws IllegalStateException if the ProductDAO is not initialized
+     * @throws IllegalStateException if the ProductRepository is not initialized
      */
     public List<Product> searchByName(String name) throws IllegalArgumentException, IllegalStateException {
-        if (productDAO == null) {
-            throw new IllegalStateException("ProductDAO is not initialized");
+        if (productRepository == null) {
+            throw new IllegalStateException("ProductRepository is not initialized");
         }
         
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
         
-        return productDAO.findByName(name);
+        return productRepository.findByNameContainingIgnoreCase(name);
     }
     
     /**
@@ -200,18 +189,18 @@ public class ProductService {
      * @param threshold the quantity threshold for low stock
      * @return a list of products with low stock
      * @throws IllegalArgumentException if the threshold is negative
-     * @throws IllegalStateException if the ProductDAO is not initialized
+     * @throws IllegalStateException if the ProductRepository is not initialized
      */
     public List<Product> getLowStockProducts(int threshold) throws IllegalArgumentException, IllegalStateException {
-        if (productDAO == null) {
-            throw new IllegalStateException("ProductDAO is not initialized");
+        if (productRepository == null) {
+            throw new IllegalStateException("ProductRepository is not initialized");
         }
         
         if (threshold < 0) {
             throw new IllegalArgumentException("Threshold cannot be negative");
         }
         
-        return productDAO.findLowStockProducts(threshold);
+        return productRepository.findByQuantityLessThanEqual(threshold);
     }
     
     /**
@@ -221,37 +210,38 @@ public class ProductService {
      * @param newQuantity the new quantity for the product
      * @return true if the stock quantity was updated successfully, false otherwise
      * @throws IllegalArgumentException if the new quantity is negative
-     * @throws IllegalStateException if the ProductDAO is not initialized
+     * @throws IllegalStateException if the ProductRepository is not initialized
      */
     public boolean updateStockQuantity(long productId, int newQuantity) throws IllegalArgumentException, IllegalStateException {
-        if (productDAO == null) {
-            throw new IllegalStateException("ProductDAO is not initialized");
+        if (productRepository == null) {
+            throw new IllegalStateException("ProductRepository is not initialized");
         }
         
         if (newQuantity < 0) {
             throw new IllegalArgumentException("Quantity cannot be negative");
         }
         
-        Product product = productDAO.findById(productId);
+        Product product = productRepository.findById(productId).orElse(null);
         if (product == null) {
             return false;
         }
         
         product.setQuantity(newQuantity);
-        return productDAO.update(product);
+        productRepository.save(product);
+        return true;
     }
     
     /**
      * Retrieves all distinct categories from the products table
      *
      * @return a list of all distinct categories
-     * @throws IllegalStateException if the ProductDAO is not initialized
+     * @throws IllegalStateException if the ProductRepository is not initialized
      */
     public List<String> getAllCategories() throws IllegalStateException {
-        if (productDAO == null) {
-            throw new IllegalStateException("ProductDAO is not initialized");
+        if (productRepository == null) {
+            throw new IllegalStateException("ProductRepository is not initialized");
         }
         
-        return productDAO.findAllCategories();
+        return productRepository.findAllCategories();
     }
 }

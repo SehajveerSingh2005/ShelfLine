@@ -71,23 +71,86 @@ public class MenuService {
             try {
                 System.out.println("\n===== ShelfLine Inventory Management System =====");
                 System.out.println("Welcome, " + currentUser.getUsername() + " (" + currentUser.getRole() + ")");
-                System.out.println("\n--- Product Management ---");
-                System.out.println("1. Add Product");
-                System.out.println("2. Update Product");
-                System.out.println("3. Delete Product");
-                System.out.println("\n--- Product Viewing ---");
-                System.out.println("4. View Product by ID");
-                System.out.println("5. View All Products");
-                System.out.println("6. View Low Stock Products");
-                System.out.println("\n--- Product Search ---");
-                System.out.println("7. Search by Category");
-                System.out.println("8. Search by Name");
-                System.out.println("\n--- System ---");
-                System.out.println("9. Exit");
-                System.out.println("================================================");
-                System.out.print("Please select an option (1-9): ");
                 
-                int choice = getIntInput();
+                // Display menu options based on user role
+                if ("admin".equalsIgnoreCase(currentUser.getRole())) {
+                    System.out.println("\n--- Product Management ---");
+                    System.out.println("1. Add Product");
+                    System.out.println("2. Update Product");
+                    System.out.println("3. Delete Product");
+                    
+                    System.out.println("\n--- Product Viewing ---");
+                    System.out.println("4. View Product by ID");
+                    System.out.println("5. View All Products");
+                    System.out.println("6. View Low Stock Products");
+                    
+                    System.out.println("\n--- Product Search ---");
+                    System.out.println("7. Search by Category");
+                    System.out.println("8. Search by Name");
+                    
+                    System.out.println("\n--- User Management ---");
+                    System.out.println("a. View All Users (Admin)");
+                    System.out.println("b. Add User (Admin)");
+                    System.out.println("c. Update User (Admin)");
+                    System.out.println("d. Delete User (Admin)");
+                    
+                    System.out.println("\n--- System ---");
+                    System.out.println("9. Exit");
+                    System.out.println("================================================");
+                    System.out.print("Please select an option (1-9, a-d): ");
+                } else { // staff role
+                    System.out.println("\n--- Product Management ---");
+                    System.out.println("1. Add Product");
+                    System.out.println("2. Update Product");
+                    System.out.println("3. Delete Product");
+                    
+                    System.out.println("\n--- Product Viewing ---");
+                    System.out.println("4. View Product by ID");
+                    System.out.println("5. View All Products");
+                    System.out.println("6. View Low Stock Products");
+                    
+                    System.out.println("\n--- Product Search ---");
+                    System.out.println("7. Search by Category");
+                    System.out.println("8. Search by Name");
+                    
+                    System.out.println("\n--- System ---");
+                    System.out.println("9. Exit");
+                    System.out.println("================================================");
+                    System.out.print("Please select an option (1-9): ");
+                }
+                
+                String input = scanner.nextLine().trim();
+                int choice = -1;
+                
+                // Parse menu choice
+                try {
+                    choice = Integer.parseInt(input);
+                } catch (NumberFormatException e) {
+                    // If not a number, it could be a letter for admin options
+                    if (input.length() == 1) {
+                        char option = input.toLowerCase().charAt(0);
+                        switch (option) {
+                            case 'a':
+                                viewAllUsers(currentUser);
+                                continue;
+                            case 'b':
+                                addUser(currentUser);
+                                continue;
+                            case 'c':
+                                updateUser(currentUser);
+                                continue;
+                            case 'd':
+                                deleteUser(currentUser);
+                                continue;
+                            default:
+                                System.out.println("Invalid option. Please select a valid option.");
+                                continue;
+                        }
+                    } else {
+                        System.out.println("Invalid option. Please select a valid option.");
+                        continue;
+                    }
+                }
                 
                 switch (choice) {
                     case 1:
@@ -582,6 +645,215 @@ public class MenuService {
         } catch (Exception e) {
             System.err.println("Error retrieving categories: " + e.getMessage());
             return null;
+        }
+    }
+    
+    /**
+     * Handles viewing all users (admin only functionality).
+     * 
+     * @param currentUser the currently logged-in user
+     */
+    private void viewAllUsers(User currentUser) {
+        if (!"admin".equalsIgnoreCase(currentUser.getRole())) {
+            System.out.println("Access denied. Only admins can view all users.");
+            pressEnterToContinue();
+            return;
+        }
+        
+        try {
+            System.out.println("\n===== All Users =====");
+            List<User> users = userService.getAllUsers();
+            
+            if (users.isEmpty()) {
+                System.out.println("No users found in the system.");
+            } else {
+                System.out.printf("%-5s %-15s %-10s%n", "ID", "Username", "Role");
+                System.out.println("-------------------------------");
+                
+                for (User user : users) {
+                    System.out.printf("%-5d %-15s %-10s%n",
+                            user.getId(),
+                            user.getUsername(),
+                            user.getRole());
+                }
+            }
+            pressEnterToContinue();
+        } catch (Exception e) {
+            System.err.println("Error retrieving users: " + e.getMessage());
+            pressEnterToContinue();
+        }
+    }
+    
+    /**
+     * Handles adding a new user (admin only functionality).
+     * 
+     * @param currentUser the currently logged-in user
+     */
+    private void addUser(User currentUser) {
+        if (!"admin".equalsIgnoreCase(currentUser.getRole())) {
+            System.out.println("Access denied. Only admins can add users.");
+            pressEnterToContinue();
+            return;
+        }
+        
+        try {
+            System.out.println("\n===== Add New User =====");
+            
+            System.out.print("Enter username: ");
+            String username = scanner.nextLine().trim();
+            
+            System.out.print("Enter password: ");
+            String password = scanner.nextLine().trim();
+            
+            System.out.print("Enter role (admin/staff): ");
+            String role = scanner.nextLine().trim();
+            
+            if (!role.equals("admin") && !role.equals("staff")) {
+                System.out.println("Invalid role. Must be 'admin' or 'staff'.");
+                pressEnterToContinue();
+                return;
+            }
+            
+            User user = new User(username, password, role);
+            long userId = userService.addUser(user);
+            
+            System.out.println("User added successfully with ID: " + userId);
+            pressEnterToContinue();
+        } catch (IllegalArgumentException e) {
+            System.err.println("Invalid input: " + e.getMessage());
+            pressEnterToContinue();
+        } catch (Exception e) {
+            System.err.println("Error adding user: " + e.getMessage());
+            pressEnterToContinue();
+        }
+    }
+    
+    /**
+     * Handles updating an existing user (admin only functionality).
+     * 
+     * @param currentUser the currently logged-in user
+     */
+    private void updateUser(User currentUser) {
+        if (!"admin".equalsIgnoreCase(currentUser.getRole())) {
+            System.out.println("Access denied. Only admins can update users.");
+            pressEnterToContinue();
+            return;
+        }
+        
+        try {
+            System.out.println("\n===== Update User =====");
+            System.out.print("Enter user ID to update: ");
+            long id = getLongInput();
+            
+            User user = userService.getUserById(id);
+            
+            if (user == null) {
+                System.out.println("User with ID " + id + " not found.");
+                pressEnterToContinue();
+                return;
+            }
+            
+            System.out.println("Current user details:");
+            System.out.println("Username: " + user.getUsername());
+            System.out.println("Role: " + user.getRole());
+            
+            System.out.print("Enter new username (or press Enter to keep current): ");
+            String usernameInput = scanner.nextLine().trim();
+            if (!usernameInput.isEmpty()) {
+                user.setUsername(usernameInput);
+            }
+            
+            System.out.print("Enter new password (or press Enter to keep current): ");
+            String passwordInput = scanner.nextLine().trim();
+            if (!passwordInput.isEmpty()) {
+                user.setPassword(passwordInput);
+            }
+            
+            System.out.print("Enter new role (admin/staff, or press Enter to keep current): ");
+            String roleInput = scanner.nextLine().trim();
+            if (!roleInput.isEmpty()) {
+                if (!roleInput.equals("admin") && !roleInput.equals("staff")) {
+                    System.out.println("Invalid role. Must be 'admin' or 'staff'.");
+                    pressEnterToContinue();
+                    return;
+                }
+                user.setRole(roleInput);
+            }
+            
+            boolean updated = userService.updateUser(user);
+            
+            if (updated) {
+                System.out.println("User updated successfully.");
+            } else {
+                System.out.println("Failed to update user.");
+            }
+            pressEnterToContinue();
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid number format: " + e.getMessage());
+            pressEnterToContinue();
+        } catch (IllegalArgumentException e) {
+            System.err.println("Invalid input: " + e.getMessage());
+            pressEnterToContinue();
+        } catch (Exception e) {
+            System.err.println("Error updating user: " + e.getMessage());
+            pressEnterToContinue();
+        }
+    }
+    
+    /**
+     * Handles deleting a user (admin only functionality).
+     * 
+     * @param currentUser the currently logged-in user
+     */
+    private void deleteUser(User currentUser) {
+        if (!"admin".equalsIgnoreCase(currentUser.getRole())) {
+            System.out.println("Access denied. Only admins can delete users.");
+            pressEnterToContinue();
+            return;
+        }
+        
+        try {
+            System.out.println("\n===== Delete User =====");
+            System.out.print("Enter user ID to delete: ");
+            long id = getLongInput();
+            
+            // Prevent admin from deleting themselves
+            if (id == currentUser.getId()) {
+                System.out.println("You cannot delete your own account.");
+                pressEnterToContinue();
+                return;
+            }
+            
+            User user = userService.getUserById(id);
+            
+            if (user == null) {
+                System.out.println("User with ID " + id + " not found.");
+                pressEnterToContinue();
+                return;
+            }
+            
+            System.out.println("User to delete:");
+            System.out.println("Username: " + user.getUsername());
+            System.out.println("Role: " + user.getRole());
+            
+            System.out.print("Are you sure you want to delete this user? (y/N): ");
+            String confirmation = scanner.nextLine().trim();
+            
+            if (confirmation.equalsIgnoreCase("y") || confirmation.equalsIgnoreCase("yes")) {
+                boolean deleted = userService.deleteUser(id);
+                
+                if (deleted) {
+                    System.out.println("User deleted successfully.");
+                } else {
+                    System.out.println("Failed to delete user.");
+                }
+            } else {
+                System.out.println("User deletion cancelled.");
+            }
+            pressEnterToContinue();
+        } catch (Exception e) {
+            System.err.println("Error deleting user: " + e.getMessage());
+            pressEnterToContinue();
         }
     }
 }

@@ -1,17 +1,18 @@
 package com.example.shelfline.service;
 
-import com.example.shelfline.dao.UserDAO;
 import com.example.shelfline.model.User;
+import com.example.shelfline.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service class for managing User entities.
  * Provides business logic for user operations including authentication,
  * CRUD operations, and user management.
  * 
- * This class uses dependency injection for the UserDAO to interact with the database.
+ * This class uses dependency injection for the UserRepository to interact with the database.
  * All operations include appropriate validation to ensure data integrity.
  * 
  * @author ShelfLine Team
@@ -20,34 +21,16 @@ import java.util.List;
 @Service
 public class UserService {
     
-    private UserDAO userDAO;
-    
-    /**
-     * Default constructor for UserService.
-     * Note: This constructor does not initialize the UserDAO.
-     * Use the parameterized constructor for proper dependency injection.
-     */
-    public UserService() {
-    }
+    private UserRepository userRepository;
     
     /**
      * Constructor for UserService with dependency injection.
      * 
-     * @param userDAO the UserDAO to use for database operations
-     */
-    public UserService(UserDAO userDAO) {
-        this.userDAO = userDAO;
-    }
-    
-    /**
-     * Sets the UserDAO for this service.
-     * This method supports dependency injection.
-     * 
-     * @param userDAO the UserDAO to use for database operations
+     * @param userRepository the UserRepository to use for database operations
      */
     @Autowired
-    public void setUserDAO(UserDAO userDAO) {
-        this.userDAO = userDAO;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
     
     /**
@@ -80,11 +63,11 @@ public class UserService {
      * @param username the username to authenticate
      * @param password the password to authenticate
      * @return the authenticated User object if successful, null otherwise
-     * @throws IllegalStateException if the UserDAO is not initialized
+     * @throws IllegalStateException if the UserRepository is not initialized
      */
     public User authenticateUser(String username, String password) throws IllegalStateException {
-        if (userDAO == null) {
-            throw new IllegalStateException("UserDAO is not initialized");
+        if (userRepository == null) {
+            throw new IllegalStateException("UserRepository is not initialized");
         }
         
         if (username == null || username.trim().isEmpty()) {
@@ -95,7 +78,8 @@ public class UserService {
             throw new IllegalArgumentException("Password cannot be null or empty");
         }
         
-        return userDAO.authenticate(username, password);
+        Optional<User> user = userRepository.findByUsernameAndPassword(username, password);
+        return user.orElse(null);
     }
     
     /**
@@ -104,17 +88,16 @@ public class UserService {
      * @param user the user to add
      * @return the ID of the newly created user
      * @throws IllegalArgumentException if the user fails validation
-     * @throws IllegalStateException if the UserDAO is not initialized
+     * @throws IllegalStateException if the UserRepository is not initialized
      */
     public long addUser(User user) throws IllegalArgumentException, IllegalStateException {
-        if (userDAO == null) {
-            throw new IllegalStateException("UserDAO is not initialized");
+        if (userRepository == null) {
+            throw new IllegalStateException("UserRepository is not initialized");
         }
         
         validateUser(user);
-        long id = userDAO.create(user);
-        user.setId(id);
-        return id;
+        User savedUser = userRepository.save(user);
+        return savedUser.getId();
     }
     
     /**
@@ -123,15 +106,19 @@ public class UserService {
      * @param user the user to update
      * @return true if the user was updated successfully, false otherwise
      * @throws IllegalArgumentException if the user fails validation
-     * @throws IllegalStateException if the UserDAO is not initialized
+     * @throws IllegalStateException if the UserRepository is not initialized
      */
     public boolean updateUser(User user) throws IllegalArgumentException, IllegalStateException {
-        if (userDAO == null) {
-            throw new IllegalStateException("UserDAO is not initialized");
+        if (userRepository == null) {
+            throw new IllegalStateException("UserRepository is not initialized");
         }
         
         validateUser(user);
-        return userDAO.update(user);
+        if (userRepository.existsById(user.getId())) {
+            userRepository.save(user);
+            return true;
+        }
+        return false;
     }
     
     /**
@@ -139,14 +126,18 @@ public class UserService {
      * 
      * @param id the ID of the user to delete
      * @return true if the user was deleted successfully, false otherwise
-     * @throws IllegalStateException if the UserDAO is not initialized
+     * @throws IllegalStateException if the UserRepository is not initialized
      */
     public boolean deleteUser(long id) throws IllegalStateException {
-        if (userDAO == null) {
-            throw new IllegalStateException("UserDAO is not initialized");
+        if (userRepository == null) {
+            throw new IllegalStateException("UserRepository is not initialized");
         }
         
-        return userDAO.delete(id);
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
     
     /**
@@ -154,14 +145,14 @@ public class UserService {
      * 
      * @param id the ID of the user to retrieve
      * @return the User object if found, null otherwise
-     * @throws IllegalStateException if the UserDAO is not initialized
+     * @throws IllegalStateException if the UserRepository is not initialized
      */
     public User getUserById(long id) throws IllegalStateException {
-        if (userDAO == null) {
-            throw new IllegalStateException("UserDAO is not initialized");
+        if (userRepository == null) {
+            throw new IllegalStateException("UserRepository is not initialized");
         }
         
-        return userDAO.findById(id);
+        return userRepository.findById(id).orElse(null);
     }
     
     /**
@@ -169,27 +160,28 @@ public class UserService {
      * 
      * @param username the username of the user to retrieve
      * @return the User object if found, null otherwise
-     * @throws IllegalStateException if the UserDAO is not initialized
+     * @throws IllegalStateException if the UserRepository is not initialized
      */
     public User getUserByUsername(String username) throws IllegalStateException {
-        if (userDAO == null) {
-            throw new IllegalStateException("UserDAO is not initialized");
+        if (userRepository == null) {
+            throw new IllegalStateException("UserRepository is not initialized");
         }
         
-        return userDAO.findByUsername(username);
+        Optional<User> user = userRepository.findByUsername(username);
+        return user.orElse(null);
     }
     
     /**
      * Retrieves all users in the system.
      * 
      * @return a list of all users
-     * @throws IllegalStateException if the UserDAO is not initialized
+     * @throws IllegalStateException if the UserRepository is not initialized
      */
     public List<User> getAllUsers() throws IllegalStateException {
-        if (userDAO == null) {
-            throw new IllegalStateException("UserDAO is not initialized");
+        if (userRepository == null) {
+            throw new IllegalStateException("UserRepository is not initialized");
         }
         
-        return userDAO.findAll();
+        return userRepository.findAll();
     }
 }
